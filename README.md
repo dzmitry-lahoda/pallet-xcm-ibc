@@ -1,9 +1,9 @@
 # pallet-xcm-ibc
 
-This pallets subscribes to IBC packets to `IBC-XCM` port.
+`pallet-xcm-ibc` imlementes IBC module and relevant XCM interfaces to send and receive IBC packets carrying XCM messages.
 
-Upon recive, it parses version XCM message out of it and sends for execution into `xcm-executor`.
+In order to send message over IBC, it imlementes `MessageExporter`.
+On receive of IBC packet, it parses XCM message and calls `XcmExecutor::execute`.
 
-Pallet implementes IBC queue to IBC bridge. All IBC messages routed via it depending on relevant origin and send IBC packets.
-
-Uses Centauri.
+It imlementes Centauri IBC module interface to allow open channels with other IBC modules. 
+Each port/channel is mapped to `origin`.
