@@ -5,7 +5,7 @@
 In order to send message over IBC, it imlementes `MessageExporter`.
 On receive of IBC packet, it parses XCM message and calls `XcmExecutor::execute`.
 
-It imlementes Centauri IBC `Module` interface to allow open channels with other IBC modules. 
+It imlementes [Centauri](https://github.com/ComposableFi/centauri/) IBC `Module` interface to allow open channels with other IBC modules. 
 Each port/channel is mapped to `XcmMultilocation` `origin`.
 
 On `on_recv_packet` if XCM message executed sucssefully, sends success asknolwedge. Else sends fails. Success or fail is execeuted in transaction.
