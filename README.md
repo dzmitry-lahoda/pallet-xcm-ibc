@@ -33,7 +33,7 @@ Only XCM V3 and onwards supported.
 
 		type OnFailAck: OnFailAck;
     
-    type OnTimeout: OnTimeout;
+                type OnTimeout: OnTimeout;
 
 		/// The origin that is allowed to execute overweight messages.
 		type ExecuteOverweightOrigin: EnsureOrigin<Self::RuntimeOrigin>;
