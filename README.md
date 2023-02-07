@@ -8,7 +8,11 @@ On receive of IBC packet, it parses XCM message and calls `XcmExecutor::execute`
 It imlementes [Centauri](https://github.com/ComposableFi/centauri/) IBC `Module` interface to allow open channels with other IBC modules. 
 Each port/channel is mapped to `XcmMultilocation` `origin`.
 
-On `on_recv_packet` if XCM message executed sucssefully, sends success asknolwedge. Else sends fails. Success or fail is execeuted in transaction.
+On `on_recv_packet` if XCM message executed sucssefully, sends success `acknowledge`. 
+In case of logical failure of transaction success `acknowledge` is written. Examples priviledge escalation, transaction format or not enough assets.
+Different kind of error is sent in case of general execution failure. Examples, failed to parse XCM message or channel is non operational.
+Whole XCM execution is in one transaction.
+If XCM message contained `Query` and response is ready immidiately, response will be sent in ackowlegment.
 
 On `on_acknowledgement_packet`, this pallet removes outgoing XCM message from sent queue with success event in case of success.
 In case of fail, invokes relevant callback and writes fail event.
@@ -17,9 +21,13 @@ On `on_timeout_packet`, it callbacks to runtime provided callback and removes me
 
 Pallet implementes weight and message limits similar to Cumulus `queue` pallets for DMP and XCMP.
 
+This store XCM version of each channel opened. On receive of IBC message
+
 It uses Unordered IBC channels.
 
 Only XCM V3 and onwards supported.
+
+Generally this pallet follows security rules, for exampled for decoding and weights, similar to what `xcmp-queue` and `dmp-queue` do.
 
 ```rust
 	#[pallet::config]
@@ -43,6 +51,8 @@ Only XCM V3 and onwards supported.
     
 		/// The weight information of this pallet.
 		type WeightInfo: WeightInfo;
+		
+		type AdvertisedXcmVersion: Get<XcmVersion>;
 	}
 ``` 
 
