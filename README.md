@@ -19,6 +19,8 @@ Pallet implementes weight and message limits similar to Cumulus `queue` pallets 
 
 It uses Unordered IBC channels.
 
+Only XCM V3 and onwards supported.
+
 ```rust
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
