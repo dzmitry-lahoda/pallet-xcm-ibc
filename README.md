@@ -1,9 +1,28 @@
 # pallet-xcm-ibc
+`pallet-xcm-ibc` implements the IBC module and relevant XCM interfaces to send and receive IBC packets carrying XCM messages.
 
-`pallet-xcm-ibc` imlementes IBC module and relevant XCM interfaces to send and receive IBC packets carrying XCM messages.
+## Opening IBC channel
 
-In order to send message over IBC, it imlementes `MessageExporter`.
-On receive of IBC packet, it parses XCM message and calls `XcmExecutor::execute`.
+The pallet implements IBC [trait Module](https://github.com/ComposableFi/centauri/blob/master/ibc/modules/src/core/ics26_routing/context.rs).
+It handles open-channel handshake protocol. Uses pallets name as port.
+It accepts   
+
+## Sending XCM message over IBC
+
+To send a message over IBC, this pallet implements `MessageExporter`.
+
+When message received,
+
+
+## Receiving XCM message
+
+When an IBC packet is received, it is parsed into a versioned XCM message. 
+`XcmExecutor::execute` is called then.
+
+
+```mermaid
+
+```
 
 It imlementes [Centauri](https://github.com/ComposableFi/centauri/) IBC `Module` interface to allow open channels with other IBC modules. 
 Each port/channel is mapped to `XcmMultilocation` `origin`.
@@ -55,4 +74,3 @@ Generally this pallet follows security rules, for exampled for decoding and weig
 		type AdvertisedXcmVersion: Get<XcmVersion>;
 	}
 ``` 
-
