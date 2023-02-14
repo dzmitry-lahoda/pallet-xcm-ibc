@@ -5,12 +5,18 @@
 ## Design
 
 - Tries to maintain ordered delivery of XCM messages as per standard.
-- Ensures, as far as it possible, that message will be delivered as per design of XCM executor 
+- Ensures, as far as it possible, that message will be delivered as per design of XCM executor
+- Initial pallet design assumes well-working IBC relayers on per message
+
+*NOTE: batching and grouping messages for better XCM order and IBC timeouts handling can be done later*
+
 
 ## Opening IBC channel
 
 The pallet implements IBC [trait Module](https://github.com/ComposableFi/centauri/blob/master/ibc/modules/src/core/ics26_routing/context.rs).
-It handles opens `ORDERED_ALLOW_TIMEOUT` channel handshake protocol.
+It handles opens `ORDERED` channel handshake protocol.
+
+*NOTE: there is design which will maintain XCM [absolutes](https://substrate.stackexchange.com/questions/6831/how-does-the-xcvm-architecture-ensure-the-absoluteness-principle-described) on top of ORDERED_ALLOW_TIMEOUT and UNORDERED, which can be done later`
 
 XCM export `channel` prefixed with pallet instance name is used as IBC `port` name to open.
 
@@ -27,24 +33,17 @@ To send a message over IBC, this pallet implements [trait ExportXcm](https://git
 - Checks if any of the relayers are eager to transfer the message for its `weight` and `timeout`, either it errors.
 - It locks some relayers amounts who were eager to deliver the message.
 
-
 `deliver`:
-- It sends `HandlerMessage.SendPacket` with relevant origins and encoded XCM message.
-
+- `HandlerMessage.SendPacket` with relevant origins and encoded XCM message (direct send used only for `ORDERED` channels)
 
 ## Receiving XCM message
 
-When an IBC packet is received, it is parsed into a versioned XCM message. 
+When an IBC packet is received, it is parsed into a versioned exported data and XCM message. 
 
-`XcmExecutor::execute` is called then.
+If desired message weight `trait ExecuteXcm::execute_xcm` fits the budget, message is executed.
 
+If message is overweight, execution fails.
 
-```mermaid
-
-```
-
-It imlementes [Centauri](https://github.com/ComposableFi/centauri/) IBC `Module` interface to allow open channels with other IBC modules. 
-Each port/channel is mapped to `XcmMultilocation` `origin`.
 
 On `on_recv_packet` if XCM message executed sucssefully, sends success `acknowledge`. 
 In case of logical failure of transaction success `acknowledge` is written. Examples priviledge escalation, transaction format or not enough assets.
