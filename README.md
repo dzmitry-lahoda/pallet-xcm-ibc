@@ -1,22 +1,41 @@
 # pallet-xcm-ibc
 `pallet-xcm-ibc` implements the IBC module and relevant XCM interfaces to send and receive IBC packets carrying XCM messages.
 
+
+## Design
+
+- Tries to maintain ordered delivery of XCM messages as per standard.
+- Ensures, as far as it possible, that message will be delivered as per design of XCM executor 
+
 ## Opening IBC channel
 
 The pallet implements IBC [trait Module](https://github.com/ComposableFi/centauri/blob/master/ibc/modules/src/core/ics26_routing/context.rs).
-It handles open-channel handshake protocol. Uses pallets name as port.
-It accepts   
+It handles opens `ORDERED_ALLOW_TIMEOUT` channel handshake protocol.
+
+XCM export `channel` prefixed with pallet instance name is used as IBC `port` name to open.
+
+XCM version is used as IBC `version` value.
 
 ## Sending XCM message over IBC
 
-To send a message over IBC, this pallet implements `MessageExporter`.
+To send a message over IBC, this pallet implements [trait ExportXcm](https://github.com/paritytech/polkadot/blob/master/xcm/xcm-executor/src/traits/export.rs).
 
-When message received,
+`validate`:
+- Checks the existence of XCM `channel` which is `IBC` port
+- IBC connection opened
+- Validates that genesis `NetworkId` is equal to genesis in IBC `connection`
+- Checks if any of the relayers are eager to transfer the message for its `weight` and `timeout`, either it errors.
+- It locks some relayers amounts who were eager to deliver the message.
+
+
+`deliver`:
+- It sends `HandlerMessage.SendPacket` with relevant origins and encoded XCM message.
 
 
 ## Receiving XCM message
 
 When an IBC packet is received, it is parsed into a versioned XCM message. 
+
 `XcmExecutor::execute` is called then.
 
 
