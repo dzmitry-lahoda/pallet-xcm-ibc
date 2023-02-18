@@ -66,6 +66,10 @@ Only XCM V3 and onwards supported.
 
 Generally this pallet follows security rules, for exampled for decoding and weights, similar to what `xcmp-queue` and `dmp-queue` do.
 
+Sends SCAL encoded XCM messages
+
+`NOTE: later in can ease integration of XCM when ProtoBug encoding of XCM is available`
+
 ```rust
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
